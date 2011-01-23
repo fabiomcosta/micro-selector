@@ -7,16 +7,35 @@
  */
 
 (function(global, document){
+	var slice = Array.prototype.slice;
+	var arrayFrom = function(collection, array){
+		array.push.apply(array, slice.call(collection, 0));
+		return array;
+	};
+	try {
+		slice.call(document.documentElement.childNodes, 0);
+	} catch(e) {
+		arrayFrom = function(collection, array){
+			for (var i = 0, l = collection.length; i < l; i++){
+				array.push(collection[i]);
+			}
+			return array;
+		};
+	}
 	
 	var $u = function(selector, context, append){
 		var elements = append || [];
 		if (!context) context = $u.context;
 		
-		selector.replace(/([\w-]*)(?:([#.])([^#.]*))*/, function(all, tag, simbol, name){
-			//if (!tag) tag = '*';
-			if (simbol == '#'){
+		selector.replace(/([\w-]*)(?:([#.])?([^#.]*))*/, function(all, tag, simbol, name){
+			if (!simbol){
+				arrayFrom(context.getElementsByTagName(tag || '*'), elements);
+			} else if (simbol == '#'){
 				var el = context.getElementById(name);
 				if (el) elements.push(el);
+			} else if (simbol == '.'){
+				//var el = context.getElementById(name);
+				//if (el) elements.push(el);
 			}
 			return '';
 		});
