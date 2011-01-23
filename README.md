@@ -1,7 +1,10 @@
 uSelector
 =========
-A micro, scope limited, css selector to be used anywhere
---------------------------------------------------------
+A micro, super fast, scope limited, css selector to be used anywhere
+--------------------------------------------------------------------
+
+uSelector (micro selector), is a node selector for HTML documents that uses css expressions to select nodes.
+It's based on Slick, the selector used on the Mootools javascript framework.
 
 ### Supported selectors
 * tag
