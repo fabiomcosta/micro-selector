@@ -1,0 +1,1 @@
+(function(g){g.uSelector=function(d,e,b,a){a=a||document;if(b&&a.getElementsByClassName)return a.getElementsByClassName(b);e=e.split(",");var c;d=[];for(var h=0;c=e[h++];){c=a.getElementsByTagName(c||"*");for(var i=0,f;f=c[i++];)if(!b||(" "+f.className+" ").indexOf(" "+b+" ")>-1)d.push(f)}return d}})(this);
