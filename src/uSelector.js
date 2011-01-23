@@ -17,10 +17,13 @@
 			for (var j = 0, el; el = els[j++];){
 				if (!className || (' ' + el.className + ' ').indexOf(' ' + className + ' ') > -1) elsArray.push(el);
 			}
-		}
+		}	
 		return elsArray;
 	};
 	
 	global['uSelector'] = $u;
+	if (!global['$u']){
+		global['$u'] = $u;
+	}
 
 })(this);
