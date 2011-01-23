@@ -34,16 +34,12 @@
 				var el = context.getElementById(name);
 				if (el) elements.push(el);
 			} else if (simbol == '.'){
-				//var el = context.getElementById(name);
-				//if (el) elements.push(el);
+				arrayFrom(context.getElementsByClassName(name), elements);
 			}
 			return '';
 		});
 		
 		/*
-		if (className && root.getElementsByClassName){
-			return root.getElementsByClassName(className);
-		}
 		tagNames = tagNames.split(',');
 		var els, elsArray = [];
 		for (var i=0, tagName; tagName = tagNames[i++];){

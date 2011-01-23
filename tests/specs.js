@@ -14,13 +14,21 @@ describe('Micro Selector', function() {
 
 	describe('tag selector', function(){
 		it('should select elements by tag name', function(){
-			expect($u('h2').length).toEqual(19);
+			var h2Collection = $u('h2');
+			expect(h2Collection instanceof Array).toEqual(true);
+			expect(h2Collection.length).toEqual(19);
 			expect($u('ul').length).toEqual(22);
 		});
 	});
 
-	xdescribe('class selector', function(){
-
+	describe('class selector', function(){
+		it('should select elements by class name', function(){
+			var classVcardCollection = $u('.vcard');
+			expect(classVcardCollection instanceof Array).toEqual(true);
+			expect(classVcardCollection.length).toEqual(5);
+			expect($u('.pattern').length).toEqual(40);
+			expect($u('.example').length).toEqual(43);
+		});
 	});
 	
 	xdescribe('mixed selectors', function(){
