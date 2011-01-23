@@ -1,12 +1,27 @@
 /**
- * @author Fabio Miranda Costa <fabio [at] solucione [dot] info>
- * http://meiocodigo.com
+ * author:  Fabio Miranda Costa
+ * github:  fabiomcosta
+ * twitter: @fabiomiranda
+ * website: http://meiocodigo.com
+ * license: MIT-style license
  */
 
-(function(global){
+(function(global, document){
 	
-	var $u = function(id, tagNames, className, root){
-		root = root || document;
+	var $u = function(selector, context, append){
+		var elements = append || [];
+		if (!context) context = $u.context;
+		
+		selector.replace(/([\w-]*)(?:([#.])([^#.]*))*/, function(all, tag, simbol, name){
+			//if (!tag) tag = '*';
+			if (simbol == '#'){
+				var el = context.getElementById(name);
+				if (el) elements.push(el);
+			}
+			return '';
+		});
+		
+		/*
 		if (className && root.getElementsByClassName){
 			return root.getElementsByClassName(className);
 		}
@@ -17,13 +32,14 @@
 			for (var j = 0, el; el = els[j++];){
 				if (!className || (' ' + el.className + ' ').indexOf(' ' + className + ' ') > -1) elsArray.push(el);
 			}
-		}	
-		return elsArray;
+		}
+		*/	
+		return elements;
 	};
 	
+	$u.context = document;
+	
 	global['uSelector'] = $u;
-	if (!global['$u']){
-		global['$u'] = $u;
-	}
+	if (!global['$u']) global['$u'] = $u;
 
-})(this);
+})(this, document);

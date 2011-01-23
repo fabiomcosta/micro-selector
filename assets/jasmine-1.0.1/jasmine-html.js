@@ -85,6 +85,11 @@ jasmine.TrivialReporter.prototype.reportRunnerStarting = function(runner) {
       self.outerDiv.className = self.outerDiv.className.replace(/ show-skipped/, '');
     }
   };
+
+  runner.env.specFilter = function(){
+    return self.specFilter.apply(self, arguments);
+  };
+
 };
 
 jasmine.TrivialReporter.prototype.reportRunnerResults = function(runner) {
