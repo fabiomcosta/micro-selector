@@ -31,7 +31,7 @@ Examples
 	</div>
 
 * $u('strong.strong-class') -> [<strong.strong-class>]
-* $u('span') -> [<span>]
+* $u('span') -> [<span >]
 * $u('#id') -> [<div#id.div-class>]
 * $u('div#id') -> [<div#id.div-class>]
 * $u('div#id.div-class') -> [<div#id.div-class>]
