@@ -44,6 +44,7 @@ describe('Micro Selector', function() {
 			expect($u(' ul ').length).toEqual(22);
 			expect($u(' .example ').length).toEqual(43);
 			expect($u(' h1#title ').length).toEqual(1);
+			expect($u(' abbr.some#abbr-id.classes.here').length).toEqual(1);
 		});
 	});
 
