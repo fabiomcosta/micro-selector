@@ -8,7 +8,10 @@ build: compress
 	@cd dist;\
 		rm $$(ls -Sr | egrep -v $$(ls -Sr | head -1));\
 		mv * ${MODULE_NAME}.js;\
-		echo "Resulting file has`ls -lh | tail -1 | cut -d " " -f 7,9`."
+		echo "Resulting file has`ls -lh *.js | tail -1 | cut -d " " -f 7,9`.";\
+		gzip -c ${MODULE_NAME}.js > ${MODULE_NAME}.js.gzip;\
+		echo "Resulting file gzipped has`ls -lh *.gzip | tail -1 | cut -d " " -f 7,9`.";\
+		rm -rf *.gzip
 
 compress:
 	@rm -rf dist
