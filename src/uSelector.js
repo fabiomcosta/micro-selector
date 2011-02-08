@@ -8,30 +8,25 @@
 
 (function(global, document){
 	
-	var elements, doc, parsed, classes;
+	var elements, parsed, classes, context, currentDocument;
 	
 	var supports_getElementsByClassName = !!document.getElementsByClassName;
 	var supports_querySelectorAll = !!document.querySelectorAll;
 	
-	var slice = Array.prototype.slice;
-	var arrayFrom = function(collection){
-		elements = slice.call(collection, 0);
-	};
-	var arrayMerge = function(collection){
-		for (var i = 0, node; node = collection[i++];){
-			elements.push(node);
+	var $u = function(selector, _context, append){
+		context = _context || $u.context;
+		currentDocument = context.ownerDocument || context;
+		arrayFrom(append);
+		if (supports_querySelectorAll){
+			try{
+				arrayFrom(context.querySelectorAll(selector));
+			} catch (e){}
+		} else {
+			selector = selector.replace(/^\s+|\s+$/g, '');
+			parse(selector);
+			find();
 		}
-	};
-	try {
-		slice.call(document.documentElement.childNodes, 0);
-	} catch(e) {
-		arrayFrom = arrayMerge;
-	}
-	
-	var arrayFilterAndMerge = function(found){
-		for (var i = 0, node; node = found[i++];){
-			if (matchSelector(node)) elements.push(node);
-		}
+		return elements;
 	};
 	
 	var matchSelector = function(node){
@@ -43,7 +38,11 @@
 				if (nodeName != parsed.tag) return false;
 			}
 		}
-		if (parsed.id && node.getAttribute('id') != parsed.id) return false;
+		
+		if (parsed.id && node.getAttribute('id') != parsed.id){
+			return false;
+		}
+		
 		if ((classes = parsed.classList)){
 			var className = (' ' + node.className + ' ');
 			for (var i = classes.length; i--;){
@@ -60,20 +59,22 @@
 			
 		if (parsed.id){
 			
-			var el = doc.getElementById(parsed.id);
-			if (el) merge([el]);
-			
+			var el = currentDocument.getElementById(parsed.id);
+			if (el && (currentDocument === context || contains(el))){
+				merge([el]);
+			}
+
 		} else if (parsed.classList){
 			
 			if (supports_getElementsByClassName){
-				merge(doc.getElementsByClassName(parsed.classList.join(' ')));
+				merge(context.getElementsByClassName(parsed.classList.join(' ')));
 			} else {
-				arrayFilterAndMerge(doc.getElementsByTagName('*'));
+				arrayFilterAndMerge(context.getElementsByTagName('*'));
 			}
 			
 		} else if (parsed.tag){
 			
-			merge(doc.getElementsByTagName(parsed.tag || '*'));
+			merge(context.getElementsByTagName(parsed.tag || '*'));
 			
 		}
 	};
@@ -93,28 +94,46 @@
 				parsed.classList.push(name);
 			} else {
 				parsed.classList = [name];
-			}
+			}	
 		}
 		return '';
 	};
 	
-	var $u = function(selector, context, append){
-		elements = append || [];
-		doc = context || $u.context;
-		if (supports_querySelectorAll){
-			try{
-				arrayFrom(doc.querySelectorAll(selector));
-			} catch (e){}
-		} else {
-			selector = selector.replace(/^\s+|\s+$/g, '');
-			parse(selector);
-			find();
-		}
-		return elements;
-	};
-	
 	$u.context = document;
 	
+	var slice = Array.prototype.slice;
+	var arrayFrom = function(collection){
+		elements = (!collection) ? [] : slice.call(collection, 0);
+	};
+	var arrayMerge = function(collection){
+		if (!collection){
+			elements = [];
+			return;
+		}
+		for (var i = 0, node; node = collection[i++];){
+			elements.push(node);
+		}
+	};
+	try {
+		slice.call(document.documentElement.childNodes, 0);
+	} catch(e) {
+		arrayFrom = arrayMerge;
+	}
+	
+	var arrayFilterAndMerge = function(found){
+		for (var i = 0, node; node = found[i++];){
+			if (matchSelector(node)) elements.push(node);
+		}
+	};
+	
+	var root = document.documentElement;
+	var contains = function(node){
+		if (node) do {
+			if (node === context) return true;
+		} while ((node = node.parentNode));
+		return false;
+	};
+
 	global['uSelector'] = $u;
 	if (!global['$u']) global['$u'] = $u;
 
