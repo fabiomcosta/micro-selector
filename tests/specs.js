@@ -40,6 +40,8 @@ describe('Micro Selector', function() {
 		it('should select elements by tagName and id', function(){
 			expect($u('h1#title').length).toEqual(1);
 			expect($u('div#title').length).toEqual(0);
+			expect($u('div.wrapper').length).toEqual(4);
+			expect($u('b.wrapper').length).toEqual(1);
 		});
 	});
 	

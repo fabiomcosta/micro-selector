@@ -10,13 +10,12 @@
 	
 	var elements, parsed, classes, context, currentDocument;
 	
-	var supports_getElementsByClassName = !!document.getElementsByClassName;
 	var supports_querySelectorAll = !!document.querySelectorAll;
 	
 	var $u = function(selector, _context, append){
+		elements = append || [];
 		context = _context || $u.context;
 		currentDocument = context.ownerDocument || context;
-		arrayFrom(append);
 		if (supports_querySelectorAll){
 			try{
 				arrayFrom(context.querySelectorAll(selector));
@@ -53,30 +52,23 @@
 	};
 	
 	var find = function(){
-		var merge = (!(parsed.id && parsed.tag && parsed.classList) &&
-			(parsed.id ^ parsed.tag ^ !!parsed.classList)) ?
-			((elements.length) ? arrayMerge : arrayFrom) : arrayFilterAndMerge;
+		
+		var parsedId = parsed.id, merge = ((parsedId && parsed.tag || parsed.classList) || (!parsedId && parsed.classList)) ?
+			arrayFilterAndMerge : arrayMerge;
+		
+		if (parsedId){
 			
-		if (parsed.id){
-			
-			var el = currentDocument.getElementById(parsed.id);
+			var el = currentDocument.getElementById(parsedId);
 			if (el && (currentDocument === context || contains(el))){
 				merge([el]);
 			}
-
-		} else if (parsed.classList){
 			
-			if (supports_getElementsByClassName){
-				merge(context.getElementsByClassName(parsed.classList.join(' ')));
-			} else {
-				arrayFilterAndMerge(context.getElementsByTagName('*'));
-			}
-			
-		} else if (parsed.tag){
+		} else {
 			
 			merge(context.getElementsByTagName(parsed.tag || '*'));
 			
 		}
+	
 	};
 	
 	var parse = function(selector){
@@ -103,13 +95,9 @@
 	
 	var slice = Array.prototype.slice;
 	var arrayFrom = function(collection){
-		elements = (!collection) ? [] : slice.call(collection, 0);
+		elements = slice.call(collection, 0);
 	};
 	var arrayMerge = function(collection){
-		if (!collection){
-			elements = [];
-			return;
-		}
 		for (var i = 0, node; node = collection[i++];){
 			elements.push(node);
 		}
@@ -128,9 +116,11 @@
 	
 	var root = document.documentElement;
 	var contains = function(node){
-		if (node) do {
-			if (node === context) return true;
-		} while ((node = node.parentNode));
+		if (node){
+			do {
+				if (node === context) return true;
+			} while ((node = node.parentNode));
+		}
 		return false;
 	};
 
