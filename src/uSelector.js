@@ -73,7 +73,7 @@
 	
 	var parse = function(selector){
 		parsed = {};
-		while ((selector = selector.replace(/([#.])?([^#.]*)/, parser)));
+		while ((selector = selector.replace(/([#.])?([^#.]*)/, parser))){};
 	};
 	
 	var parser = function(all, simbol, name){
