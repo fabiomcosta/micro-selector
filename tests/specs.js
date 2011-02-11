@@ -48,6 +48,14 @@ describe('Micro Selector', function() {
 		expect($u(' abbr.some#abbr-id.classes.here').length).toEqual(1);
 	});
 	
+	it('should select elements with the added pseudo classes', function(){
+		$u.pseudos['contains-cheese'] = function(node){
+			return node.innerHTML.indexOf('cheese') > -1;
+		};
+		expect($u('div:contains-cheese').length).toEqual(1);
+		expect($u('div:non-existent-pseudo').length).toEqual(0);
+	});
+	
 });
 
 };

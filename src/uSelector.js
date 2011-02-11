@@ -8,97 +8,113 @@
 
 (function(global, document){
 	
-	var elements, parsed, classes, context, currentDocument;
+	var _elements, _parsed, _parsedClasses, _parsedPseudos, _pseudos = {}, _context, _currentDocument;
 	
 	var supports_querySelectorAll = !!document.querySelectorAll;
 	
-	var $u = function(selector, _context, append){
-		elements = append || [];
-		context = _context || $u.context;
+	var $u = function(selector, context, append){
+		_elements = append || [];
+		_context = context || $u.context;
 		if (supports_querySelectorAll){
 			try{
-				arrayFrom(context.querySelectorAll(selector));
+				arrayFrom(_context.querySelectorAll(selector));
+				return _elements;
 			} catch (e){}
-		} else {
-			currentDocument = context.ownerDocument || context;
-			selector = selector.replace(/^\s+|\s+$/g, '');
-			parse(selector);
-			find();
 		}
-		return elements;
+
+		_currentDocument = _context.ownerDocument || _context;
+		parse(selector.replace(/^\s+|\s+$/g, ''));
+		find();
+		
+		return _elements;
 	};
 	
 	var matchSelector = function(node){
-		if (parsed.tag){
+		if (_parsed.tag){
 			var nodeName = node.nodeName.toUpperCase();
-			if (parsed.tag == '*'){
+			if (_parsed.tag == '*'){
 				if (nodeName < '@') return false; // Fix for comment nodes and closed nodes
 			} else {
-				if (nodeName != parsed.tag) return false;
+				if (nodeName != _parsed.tag) return false;
 			}
 		}
 		
-		if (parsed.id && node.getAttribute('id') != parsed.id){
+		if (_parsed.id && node.getAttribute('id') != _parsed.id){
 			return false;
 		}
 		
-		if ((classes = parsed.classList)){
+		if ((_parsedClasses = _parsed.classes)){
 			var className = (' ' + node.className + ' ');
-			for (var i = classes.length; i--;){
-				if (className.indexOf(' ' + classes[i] + ' ') < 0) return false;
+			for (var i = _parsedClasses.length; i--;){
+				if (className.indexOf(' ' + _parsedClasses[i] + ' ') < 0) return false;
 			}
 		}
+		
+		if ((_parsedPseudos = _parsed.pseudos)){
+			for (var i = _parsedPseudos.length; i--;){
+				var pseudoClass = _pseudos[_parsedPseudos[i]];
+				if (!pseudoClass || !pseudoClass(node)) return false;
+			}
+		}
+		
 		return true;
 	};
 	
 	var find = function(){
 		
-		var parsedId = parsed.id,
-			merge = ((parsedId && parsed.tag || parsed.classList) || (!parsedId && parsed.classList)) ?
+		var parsedId = _parsed.id,
+			merge = ((parsedId && _parsed.tag || _parsed.classes || _parsed.pseudos)
+				|| (!parsedId && (_parsed.classes || _parsed.pseudos))) ?
 				arrayFilterAndMerge : arrayMerge;
 		
 		if (parsedId){
 			
-			var el = currentDocument.getElementById(parsedId);
-			if (el && (currentDocument === context || contains(el))){
+			var el = _currentDocument.getElementById(parsedId);
+			if (el && (_currentDocument === _context || contains(el))){
 				merge([el]);
 			}
 			
 		} else {
 			
-			merge(context.getElementsByTagName(parsed.tag || '*'));
+			merge(_context.getElementsByTagName(_parsed.tag || '*'));
 			
 		}
 	
 	};
 	
 	var parse = function(selector){
-		parsed = {};
-		while ((selector = selector.replace(/([#.])?([^#.]*)/, parser))){};
+		_parsed = {};
+		while ((selector = selector.replace(/([#.:])?([^#.:]*)/, parser))){};
 	};
 	
 	var parser = function(all, simbol, name){
 		if (!simbol){
-			parsed.tag = name.toUpperCase();
+			_parsed.tag = name.toUpperCase();
 		} else if (simbol == '#'){
-			parsed.id = name;
+			_parsed.id = name;
 		} else if (simbol == '.'){
-			if (parsed.classList){
-				parsed.classList.push(name);
+			if (_parsed.classes){
+				_parsed.classes.push(name);
 			} else {
-				parsed.classList = [name];
-			}	
+				_parsed.classes = [name];
+			}
+		} else if (simbol == ':'){
+			if (_parsed.pseudos){
+				_parsed.pseudos.push(name);
+			} else {
+				_parsed.pseudos = [name];
+			}
 		}
 		return '';
 	};
 	
 	var slice = Array.prototype.slice;
 	var arrayFrom = function(collection){
-		elements = slice.call(collection, 0);
+		_elements = slice.call(collection, 0);
 	};
 	var arrayMerge = function(collection){
 		for (var i = 0, node; node = collection[i++];){
-			elements.push(node);
+			_elements.push(node);
 		}
 	};
 	try {
@@ -109,19 +125,18 @@
 	
 	var arrayFilterAndMerge = function(found){
 		for (var i = 0, node; node = found[i++];){
-			if (matchSelector(node)) elements.push(node);
+			if (matchSelector(node)) _elements.push(node);
 		}
 	};
 	
 	var contains = function(node){
-		if (node){
-			do {
-				if (node === context) return true;
-			} while ((node = node.parentNode));
-		}
+		do {
+			if (node === _context) return true;
+		} while ((node = node.parentNode));
 		return false;
 	};
 	
+	$u['pseudos'] = _pseudos;
 	$u['context'] = document;
 	global['uSelector'] = $u;
 	if (!global['$u']) global['$u'] = $u;
