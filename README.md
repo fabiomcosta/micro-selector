@@ -37,6 +37,11 @@ Examples
 * $u('div#id.div-class') -> [<div#id.div-class>]
 * $u('em') -> []
 
+Run Tests
+---------
+Enter the tests/ folder on your browser.
+You'll need PHP on your server to run them.
+
 License
 -------
 

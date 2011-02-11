@@ -1,15 +1,5 @@
 var SlickSpec = {
 	
-	isHTML: function(document){
-		var testNode = document.createElement('div'), isHTML = false;
-		try {
-			var id = 'slick_getbyid_test';
-			testNode.innerHTML = '<a id="'+id+'"></a>';
-			isHTML = !!document.getElementById(id);
-		} catch(e){};
-		return isHTML;
-	},
-	
 	addEvent: function(obj, event, handler) {
 		if (obj.addEventListener) {
 			obj.addEventListener(event, handler, false);
@@ -142,7 +132,7 @@ var SlickSpec = {
 		if (!this instanceof Mock.Request) throw new Error('Mock.Request is not callable directly. Must use `new Mock.Request`');
 	
 		this.mockName = mockName;
-		this.url = url;
+		this.url = url + '?nocache=' + (+new Date);
 		var self = this;
 		this.rq = new SimpleRequest();
 		Mock.templateCounter++;
@@ -159,7 +149,7 @@ var SlickSpec = {
 		Mock.templateCounter++;
 		template.style.display = 'none';
 		template.setAttribute('iframeboder', 0);
-		template.src = url;
+		template.src = url + '?nocache=' + (+new Date);
 		document.getElementsByTagName('body')[0].appendChild(template);
 	};
 

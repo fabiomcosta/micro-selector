@@ -15,12 +15,12 @@
 	var $u = function(selector, _context, append){
 		elements = append || [];
 		context = _context || $u.context;
-		currentDocument = context.ownerDocument || context;
 		if (supports_querySelectorAll){
 			try{
 				arrayFrom(context.querySelectorAll(selector));
 			} catch (e){}
 		} else {
+			currentDocument = context.ownerDocument || context;
 			selector = selector.replace(/^\s+|\s+$/g, '');
 			parse(selector);
 			find();
@@ -53,8 +53,9 @@
 	
 	var find = function(){
 		
-		var parsedId = parsed.id, merge = ((parsedId && parsed.tag || parsed.classList) || (!parsedId && parsed.classList)) ?
-			arrayFilterAndMerge : arrayMerge;
+		var parsedId = parsed.id,
+			merge = ((parsedId && parsed.tag || parsed.classList) || (!parsedId && parsed.classList)) ?
+				arrayFilterAndMerge : arrayMerge;
 		
 		if (parsedId){
 			
@@ -91,8 +92,6 @@
 		return '';
 	};
 	
-	$u.context = document;
-	
 	var slice = Array.prototype.slice;
 	var arrayFrom = function(collection){
 		elements = slice.call(collection, 0);
@@ -114,7 +113,6 @@
 		}
 	};
 	
-	var root = document.documentElement;
 	var contains = function(node){
 		if (node){
 			do {
@@ -123,7 +121,8 @@
 		}
 		return false;
 	};
-
+	
+	$u['context'] = document;
 	global['uSelector'] = $u;
 	if (!global['$u']) global['$u'] = $u;
 
