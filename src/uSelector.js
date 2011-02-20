@@ -8,52 +8,59 @@
 
 (function(global, document){
 	
-	var _elements, _parsed, _parsedClasses, _parsedPseudos, _pseudos = {}, _context, _currentDocument;
+	var elements,
+		parsed,
+		parsedClasses,
+		parsedPseudos,
+		pseudos = {},
+		context,
+		currentDocument,
+		reTrim = /^\s+|\s+$/g;
 	
 	var supports_querySelectorAll = !!document.querySelectorAll;
 	
-	var $u = function(selector, context, append){
-		_elements = append || [];
-		_context = context || $u.context;
+	var $u = function(selector, _context, append){
+		elements = append || [];
+		context = _context || $u.context;
 		if (supports_querySelectorAll){
 			try{
-				arrayFrom(_context.querySelectorAll(selector));
-				return _elements;
+				arrayFrom(context.querySelectorAll(selector));
+				return elements;
 			} catch (e){}
 		}
 
-		_currentDocument = _context.ownerDocument || _context;
-		parse(selector.replace(/^\s+|\s+$/g, ''));
+		currentDocument = context.ownerDocument || context;
+		parse(selector.replace(reTrim, ''));
 		find();
 		
-		return _elements;
+		return elements;
 	};
 	
 	var matchSelector = function(node){
-		if (_parsed.tag){
+		if (parsed.tag){
 			var nodeName = node.nodeName.toUpperCase();
-			if (_parsed.tag == '*'){
+			if (parsed.tag == '*'){
 				if (nodeName < '@') return false; // Fix for comment nodes and closed nodes
 			} else {
-				if (nodeName != _parsed.tag) return false;
+				if (nodeName != parsed.tag) return false;
 			}
 		}
 		
-		if (_parsed.id && node.getAttribute('id') != _parsed.id){
+		if (parsed.id && node.getAttribute('id') != parsed.id){
 			return false;
 		}
 		
-		if ((_parsedClasses = _parsed.classes)){
+		if ((parsedClasses = parsed.classes)){
 			var className = (' ' + node.className + ' ');
-			for (var i = _parsedClasses.length; i--;){
-				if (className.indexOf(' ' + _parsedClasses[i] + ' ') < 0) return false;
+			for (var i = parsedClasses.length; i--;){
+				if (className.indexOf(' ' + parsedClasses[i] + ' ') < 0) return false;
 			}
 		}
 		
-		if ((_parsedPseudos = _parsed.pseudos)){
-			for (var i = _parsedPseudos.length; i--;){
-				var pseudoClass = _pseudos[_parsedPseudos[i]];
-				if (!pseudoClass || !pseudoClass(node)) return false;
+		if ((parsedPseudos = parsed.pseudos)){
+			for (var i = parsedPseudos.length; i--;){
+				var pseudoClass = pseudos[parsedPseudos[i]];
+				if (!(pseudoClass && pseudoClass(node))) return false;
 			}
 		}
 		
@@ -62,47 +69,47 @@
 	
 	var find = function(){
 		
-		var parsedId = _parsed.id,
-			merge = ((parsedId && _parsed.tag || _parsed.classes || _parsed.pseudos)
-				|| (!parsedId && (_parsed.classes || _parsed.pseudos))) ?
+		var parsedId = parsed.id,
+			merge = ((parsedId && parsed.tag || parsed.classes || parsed.pseudos)
+				|| (!parsedId && (parsed.classes || parsed.pseudos))) ?
 				arrayFilterAndMerge : arrayMerge;
 		
 		if (parsedId){
 			
-			var el = _currentDocument.getElementById(parsedId);
-			if (el && (_currentDocument === _context || contains(el))){
+			var el = currentDocument.getElementById(parsedId);
+			if (el && (currentDocument === context || contains(el))){
 				merge([el]);
 			}
 			
 		} else {
 			
-			merge(_context.getElementsByTagName(_parsed.tag || '*'));
+			merge(context.getElementsByTagName(parsed.tag || '*'));
 			
 		}
 	
 	};
 	
 	var parse = function(selector){
-		_parsed = {};
+		parsed = {};
 		while ((selector = selector.replace(/([#.:])?([^#.:]*)/, parser))){};
 	};
 	
 	var parser = function(all, simbol, name){
 		if (!simbol){
-			_parsed.tag = name.toUpperCase();
+			parsed.tag = name.toUpperCase();
 		} else if (simbol == '#'){
-			_parsed.id = name;
+			parsed.id = name;
 		} else if (simbol == '.'){
-			if (_parsed.classes){
-				_parsed.classes.push(name);
+			if (parsed.classes){
+				parsed.classes.push(name);
 			} else {
-				_parsed.classes = [name];
+				parsed.classes = [name];
 			}
 		} else if (simbol == ':'){
-			if (_parsed.pseudos){
-				_parsed.pseudos.push(name);
+			if (parsed.pseudos){
+				parsed.pseudos.push(name);
 			} else {
-				_parsed.pseudos = [name];
+				parsed.pseudos = [name];
 			}
 		}
 		return '';
@@ -110,11 +117,11 @@
 	
 	var slice = Array.prototype.slice;
 	var arrayFrom = function(collection){
-		_elements = slice.call(collection, 0);
+		elements = slice.call(collection, 0);
 	};
 	var arrayMerge = function(collection){
 		for (var i = 0, node; node = collection[i++];){
-			_elements.push(node);
+			elements.push(node);
 		}
 	};
 	try {
@@ -125,18 +132,18 @@
 	
 	var arrayFilterAndMerge = function(found){
 		for (var i = 0, node; node = found[i++];){
-			if (matchSelector(node)) _elements.push(node);
+			if (matchSelector(node)) elements.push(node);
 		}
 	};
 	
 	var contains = function(node){
 		do {
-			if (node === _context) return true;
+			if (node === context) return true;
 		} while ((node = node.parentNode));
 		return false;
 	};
 	
-	$u['pseudos'] = _pseudos;
+	$u['pseudos'] = pseudos;
 	$u['context'] = document;
 	global['uSelector'] = $u;
 	if (!global['$u']) global['$u'] = $u;

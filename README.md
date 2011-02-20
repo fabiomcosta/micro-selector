@@ -10,20 +10,21 @@ It's based on [Slick](https://github.com/mootools/slick), the selector used on t
 * tag
 * id
 * class
+* custom pseudo-classes
 
 ### Unsupported selectors
 * combinators (ex: "div span", "div > span")
 * multiple expressions (expressions with comma, ex: "div, span")
 * attribute (ex: "a[title='title']")
-* pseudo-classes (ex: "input:checked")
 
 How to use
 ----------
 
-$u(your-selector) -> returns an array of nodes that match the selector
+$u('your-selector') -> returns an array of nodes that match the selector
 
 Examples
 --------
+
 	<div>
 		<span>text</span>
 		<strong class="strong-class">strong-text</strong>
@@ -39,6 +40,7 @@ Examples
 
 Run Tests
 ---------
+
 Enter the tests/ folder on your browser.
 You'll need PHP on your server to run them.
 
