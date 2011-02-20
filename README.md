@@ -34,16 +34,16 @@ note: To build with these pseudo-selectors included do `make build all=true`
 How to use
 ----------
 
-$u('your-selector') -> returns an array of nodes that match the selector
+`$u('your-selector')` -> returns an array of nodes that match the selector
 
 Create your own pseudo-class
 --------------------------------
 
-$u.pseudo['your-custom-pseudo'] = function(node){
-	return boolean;
-};
+	$u.pseudo['your-custom-pseudo'] = function(node){
+		return boolean;
+	};
 
-It should return true if the passed node fits the behavior of your pseudo. see the [[ "src/uSelectorPseudoClasses.js" ]]
+It should return true if the passed node fits the behavior of your pseudo. see the ["src/uSelectorPseudoClasses.js"](https://github.com/fabiomcosta/micro-selector/blob/master/src/uSelectorPseudoClasses.js)
 
 Examples
 --------
