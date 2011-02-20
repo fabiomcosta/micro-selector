@@ -17,10 +17,33 @@ It's based on [Slick](https://github.com/mootools/slick), the selector used on t
 * multiple expressions (expressions with comma, ex: "div, span")
 * attribute (ex: "a[title='title']")
 
+### Suported with the uSelectorPseudoClasses module
+* :empty
+* :first-child
+* :last-child
+* :only-child
+* :first-of-type
+* :last-of-type
+* :only-of-type
+* :disabled
+* :checked
+* :selected
+
+note: To build with these pseudo-selectors included do `make build all=true`
+
 How to use
 ----------
 
 $u('your-selector') -> returns an array of nodes that match the selector
+
+Create your own pseudo-class
+--------------------------------
+
+$u.pseudo['your-custom-pseudo'] = function(node){
+	return boolean;
+};
+
+It should return true if the passed node fits the behavior of your pseudo. see the [[ "src/uSelectorPseudoClasses.js" ]]
 
 Examples
 --------

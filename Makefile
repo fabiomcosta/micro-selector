@@ -1,22 +1,30 @@
-
 MODULE_NAME = uSelector
 UNCOMPRESSED = dist/${MODULE_NAME}.uncompressed.js
-MODULES = src/uSelector.js
+CORE = src/uSelector.js
+ALL_MODULES = \
+	$(CORE) \
+	src/uSelectorPseudoClasses.js
 
 build: compress
 	@echo "Removing unnecessary files..."
 	@cd dist;\
-		rm $$(ls -Sr | egrep -v $$(ls -Sr | head -1));\
+		rm $$(ls | egrep -v $$(ls -S | tail -1));\
 		mv * ${MODULE_NAME}.js;\
-		echo "Resulting file has`ls -lh *.js | tail -1 | cut -d " " -f 7,9`.";\
+		echo "Resulting file has `ls -lh *.js | tail -1 | awk '{ print $$5 }'`.";\
 		gzip -c ${MODULE_NAME}.js > ${MODULE_NAME}.js.gzip;\
-		echo "Resulting file gzipped has`ls -lh *.gzip | tail -1 | cut -d " " -f 7,9`.";\
+		echo "Resulting file gzipped has `ls -lh *.gzip | tail -1 | awk '{ print $$5 }'`.";\
 		rm -rf *.gzip
 
 compress:
 	@rm -rf dist
 	@mkdir -p dist
-	@cat ${MODULES} > ${UNCOMPRESSED}
+	@\
+		if [ "$(all)" ]; then\
+			MODULES="$(ALL_MODULES)";\
+		else\
+			MODULES="$(CORE)";\
+		fi;\
+		cat $$MODULES > ${UNCOMPRESSED}
 	@echo "Compressing with google compiler..."
 	@java -jar assets/compiler.jar --jscomp_warning undefinedVars --charset utf8 --compilation_level ADVANCED_OPTIMIZATIONS --js ${UNCOMPRESSED} --js_output_file dist/${MODULE_NAME}.cc.js
 	@echo "Compressing with yui compressor..."
@@ -26,8 +34,4 @@ compress:
 
 test:
 	@open tests/index.html
-
-push: build
-	@git commit -a
-	@git push
 
