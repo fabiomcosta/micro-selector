@@ -10,6 +10,8 @@ build: compress
 	@cd dist;\
 		rm $$(ls | egrep -v $$(ls -S | tail -1));\
 		mv * ${MODULE_NAME}.js;\
+		echo "Adding comment header to compressed file";\
+		cat ../HEADER ${MODULE_NAME}.js > __tmp__ && cat __tmp__ > ${MODULE_NAME}.js && rm -rf __tmp__;\
 		echo "Resulting file has `ls -lh *.js | tail -1 | awk '{ print $$5 }'`.";\
 		gzip -c ${MODULE_NAME}.js > ${MODULE_NAME}.js.gzip;\
 		echo "Resulting file gzipped has `ls -lh *.gzip | tail -1 | awk '{ print $$5 }'`.";\
@@ -26,7 +28,7 @@ compress:
 		fi;\
 		cat $$MODULES > ${UNCOMPRESSED}
 	@echo "Compressing with google compiler..."
-	@java -jar assets/compiler.jar --jscomp_warning undefinedVars --charset utf8 --compilation_level ADVANCED_OPTIMIZATIONS --js ${UNCOMPRESSED} --js_output_file dist/${MODULE_NAME}.cc.js
+	@java -jar assets/compiler.jar --jscomp_warning undefinedVars --charset utf8 --compilation_level SIMPLE_OPTIMIZATIONS --js ${UNCOMPRESSED} --js_output_file dist/${MODULE_NAME}.cc.js
 	@echo "Compressing with yui compressor..."
 	@java -jar assets/yui.jar ${UNCOMPRESSED} -o dist/${MODULE_NAME}.yui.js --charset=utf8
 	@echo "Compressing with uglify..."

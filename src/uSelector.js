@@ -2,7 +2,6 @@
  * author:  Fabio Miranda Costa
  * github:  fabiomcosta
  * twitter: @fabiomiranda
- * website: http://meiocodigo.com
  * license: MIT-style license
  */
 
