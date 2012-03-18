@@ -54,12 +54,12 @@ Examples
 		<div id="id" class="div-class"></div>
 	</div>
 
-* $u('strong.strong-class') -> [<strong.strong-class>]
-* $u('span') -> [\<span\>]
-* $u('#id') -> [<div#id.div-class>]
-* $u('div#id') -> [<div#id.div-class>]
-* $u('div#id.div-class') -> [<div#id.div-class>]
-* $u('em') -> []
+* `$u('strong.strong-class') -> [<strong.strong-class>]`
+* `$u('span') -> [<span>]`
+* `$u('#id') -> [<div#id.div-class>]`
+* `$u('div#id') -> [<div#id.div-class>]`
+* `$u('div#id.div-class') -> [<div#id.div-class>]`
+* `$u('em') -> []`
 
 Run Tests
 ---------
